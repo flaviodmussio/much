@@ -1,0 +1,55 @@
+version: '3'
+services:
+  db:
+    build: ./mysql
+    container_name: database
+    restart: always
+    ports:
+      - 3306:3306
+    networks:
+      seginfo:
+        ipv4_address: 10.60.80.9
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+    networks:
+      seginfo:
+        ipv4_address: 10.60.80.2
+  front:
+    build: ./front
+    volumes:
+    - .:/home/nodejs/app
+    - ./node_modules:/home/nodejs/app/node_modules
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+      - back
+    networks:
+      seginfo:
+        ipv4_address: 10.60.80.3
+  back:
+    container_name: back
+    build: './back'
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - .:/home/node/api
+      - /home/node/api/node_modules
+    ports:
+      - '8083:8080'
+    networks:
+      seginfo:
+        ipv4_address: 10.60.80.4
+
+networks:
+  seginfo:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.60.80.0/24
