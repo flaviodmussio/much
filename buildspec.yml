@@ -3,4 +3,4 @@ phases:
   build:
     commands:
       - ls
-      - docker-compose up back
+      - docker-compose up -d
